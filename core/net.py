@@ -2,7 +2,7 @@ from node import Node, Host, Switch
 from link import Link
 
 
-IMAGE = ''
+IMAGE = 'ubuntu'
 NETWORK = '10.0.0.0/8'
 
 class Network:
@@ -72,9 +72,6 @@ class Network:
             self.links[linkeman] = link
             print('.', end='')
         print('')
-
-        for worker in self.infra.workers:
-            worker.monitor()
     
     def stop(self):
         for node in self.nodes.values():
