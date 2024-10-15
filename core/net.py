@@ -1,4 +1,4 @@
-from node import Node, Host, Switch
+from node import Node, Host, Switch, Router
 from link import Link
 
 
@@ -33,6 +33,7 @@ class Network:
         self.infra = mapper.infra
         self.hosts = {}
         self.switches = {}
+        self.routers = {}
         self.nodes = {}
         self.links = {}
         
@@ -43,7 +44,7 @@ class Network:
         for hostname in self.topo.hosts:
             parent = self.mapper.mapping[hostname]
             ip = Network._gen_ip()
-            host = Host(hostname, IMAGE, ip, parent)
+            host = Host(hostname, IMAGE, parent, ip)
             self.hosts[hostname] = host
             self.nodes[hostname] = host
             parent.nodes[hostname] = host
@@ -58,6 +59,17 @@ class Network:
             self.switches[switchname] = switch
             self.nodes[switchname] = switch
             parent.nodes[switchname] = switch
+            print('.', end='')
+        print('')
+
+        print("* Starting routers", end='')
+        
+        for routername in self.topo.routers:
+            parent = self.mapper.mapping[routername]
+            router = Router(routername, parent)
+            self.routers[routername] = routername
+            self.nodes[routername] = router
+            parent.nodes[routername] = router
             print('.', end='')
         print('')
             

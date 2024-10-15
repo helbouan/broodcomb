@@ -2,6 +2,7 @@ class Topo:
     def __init__(self, *args):
         self.hosts = []
         self.switches = []
+        self.routers = []
         self.links = []
         self.build(*args)
 
@@ -14,6 +15,10 @@ class Topo:
 
     def add_switch(self, name):
         self.switches.append(name)
+        return name
+    
+    def add_router(self, name):
+        self.routers.append(name)
         return name
 
     def add_link(self, node1, node2, **kwargs):

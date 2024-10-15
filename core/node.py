@@ -1,4 +1,5 @@
 DOCKER = "docker"
+ROUTER_IMAGE = "vyos"
 
 class Container:
     def __init__(self, name, image, parent):
@@ -33,7 +34,7 @@ class Container:
         self.parent.push(path, inter_path)
         cmd = """%s cp %s %s:%s""" % (DOCKER, inter_path, self.cid, remote_path)
         (stdout, stderr) = self.parent.run(cmd)
-        return (stdout, stderr)
+        return (stdout, stderr) 
     
     def pull(self, path, local_path):
         filename = path.split('/')[-1]
@@ -55,7 +56,7 @@ class Node:
         self.intfs = []
 
 class Host(Node):
-    def __init__(self, name, image, ip, parent):
+    def __init__(self, name, image, parent, ip=None):
         super().__init__(name, parent)
         self.container = Container(name, image, parent)
         self.ip = ip
@@ -73,7 +74,10 @@ class Host(Node):
         self.intfs.append(intf)
         intf.node = self
         intf.parent = self.parent
-        cmd = "ip link set %s netns %s; ip netns exec %s ifconfig %s %s up;" % (intf.name, self.container.cid, self.container.cid, intf.name, self.ip)
+        if self.ip is not None:
+            cmd = "ip link set %s netns %s; ip netns exec %s ifconfig %s %s up;" % (intf.name, self.container.cid, self.container.cid, intf.name, self.ip)
+        else:
+            pass
         self.parent.run(cmd)
     
     def delete(self):
@@ -95,3 +99,10 @@ class Switch(Node):
     def delete(self):
         cmd = "ovs-vsctl del-br %s" % self.name
         self.parent.run(cmd)
+
+class Router(Host):
+    def __init__(self, name, parent):
+        super().__init__(name, ROUTER_IMAGE, parent)
+    
+    def config(self):
+        pass
